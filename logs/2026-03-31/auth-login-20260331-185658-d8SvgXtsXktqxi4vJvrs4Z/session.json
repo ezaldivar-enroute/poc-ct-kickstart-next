@@ -1,0 +1,17 @@
+{
+  "command": "auth:login",
+  "module": "login",
+  "userId": "e7a8003c-c15c-4851-b809-475bbab34234",
+  "email": "",
+  "sessionId": "d8SvgXtsXktqxi4vJvrs4Z",
+  "apiKey": "",
+  "orgId": "",
+  "authenticationMethod": "",
+  "startTimestamp": "2026-03-31T23:56:58.622Z",
+  "MachineEnvironment": {
+    "nodeVersion": "v22.13.1",
+    "os": "win32",
+    "hostname": "HP-OMEN",
+    "CLI_VERSION": "1.60.0"
+  }
+}
