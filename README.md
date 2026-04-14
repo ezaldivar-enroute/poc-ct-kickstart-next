@@ -10,6 +10,12 @@ More details about this codebase can be found on the [Contentstack docs](https:/
 
 [![Join us on Discord](https://img.shields.io/badge/Join%20Our%20Discord-7289da.svg?style=flat&logo=discord&logoColor=%23fff)](https://community.contentstack.com)
 
+## Contributor onboarding
+
+New contributors should start with the onboarding guide in [findings/onboarding.md](./findings/onboarding.md). It summarizes the repository structure, key modules, a beginner-friendly code path, and a Mermaid diagram of the main homepage flow.
+
+This repository also includes a repo-local Codex skill at [.codex/skills/repo-onboarding-publisher](./.codex/skills/repo-onboarding-publisher). Use `$repo-onboarding-publisher` when you want Codex to analyze the repository, regenerate the onboarding document in Markdown, and publish the final version to Obsidian.
+
 ## How to get started
 
 Before you can run this code, you will need a Contentstack "Stack" to connect to.
