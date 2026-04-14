@@ -1,71 +1,197 @@
-# kickstart-next Onboarding
+# Onboarding
 
 ## Overview
-`kickstart-next` is a minimal Next.js starter for rendering a Contentstack `page` entry and supporting Contentstack Live Preview / Visual Builder workflows. The main developer workflow is: configure Contentstack credentials, run the app locally, and inspect how the homepage fetches a `page` entry and renders it in normal or preview mode.
+This repository is a minimal Next.js starter for Contentstack. Its main job is to fetch a `page` entry from Contentstack and render it as the homepage. It also supports Contentstack Live Preview and Visual Builder so content editors can make updates and see changes in real time.
 
-## Quick Start
-- Prerequisites: Node.js with `npm`, a Contentstack stack, delivery token, preview token, and the Contentstack CLI if you want to seed demo content.
-- Install: `npm install`
-- Run locally: `npm run dev`
-- Build: `npm run build`
-- Start production build: `npm run start`
-- Lint: `npm run lint`
-- Required environment variables: `NEXT_PUBLIC_CONTENTSTACK_API_KEY`, `NEXT_PUBLIC_CONTENTSTACK_DELIVERY_TOKEN`, `NEXT_PUBLIC_CONTENTSTACK_PREVIEW_TOKEN`, `NEXT_PUBLIC_CONTENTSTACK_ENVIRONMENT`, `NEXT_PUBLIC_CONTENTSTACK_REGION`, `NEXT_PUBLIC_CONTENTSTACK_PREVIEW`
-- Optional environment variables used by the code: `NEXT_PUBLIC_CONTENTSTACK_CONTENT_DELIVERY`, `NEXT_PUBLIC_CONTENTSTACK_PREVIEW_HOST`, `NEXT_PUBLIC_CONTENTSTACK_CONTENT_APPLICATION`, `NEXT_PUBLIC_CONTENTSTACK_IMAGE_HOSTNAME`
+At a high level, the app does three things:
+- Configures a Contentstack client from environment variables
+- Fetches homepage content by URL
+- Renders that content either in normal mode or preview mode
 
-## Structure
-- `app/`: App Router entrypoints and root layout. The homepage is implemented in [app/page.tsx](</C:/Users/user/Documents/GitHub/kickstart-next/app/page.tsx>) and the shell is in [app/layout.tsx](</C:/Users/user/Documents/GitHub/kickstart-next/app/layout.tsx>).
-- `components/`: Rendering components for normal and preview flows. The shared renderer is [components/Page.tsx](</C:/Users/user/Documents/GitHub/kickstart-next/components/Page.tsx>), and preview-specific behavior lives in [components/Preview.tsx](</C:/Users/user/Documents/GitHub/kickstart-next/components/Preview.tsx>).
-- `lib/`: Contentstack integration and content model types. The fetch and preview logic is in [lib/contentstack.ts](</C:/Users/user/Documents/GitHub/kickstart-next/lib/contentstack.ts>) and the data model is in [lib/types.ts](</C:/Users/user/Documents/GitHub/kickstart-next/lib/types.ts>).
-- Root config: [package.json](</C:/Users/user/Documents/GitHub/kickstart-next/package.json>) defines the run commands and dependencies; [next.config.mjs](</C:/Users/user/Documents/GitHub/kickstart-next/next.config.mjs>) configures remote image hosts; [.env.example](</C:/Users/user/Documents/GitHub/kickstart-next/.env.example>) shows the required Contentstack variables.
+This makes the repo a good example of a small content-driven Next.js app with a clear data flow.
 
-## Key Modules
-- [app/page.tsx](</C:/Users/user/Documents/GitHub/kickstart-next/app/page.tsx>): Best first file to read. It shows the top-level branch between preview mode and standard server-rendered mode.
-- [lib/contentstack.ts](</C:/Users/user/Documents/GitHub/kickstart-next/lib/contentstack.ts>): Core integration layer. It builds the Contentstack SDK client, configures live preview, and defines `getPage("/")`.
-- [components/Page.tsx](</C:/Users/user/Documents/GitHub/kickstart-next/components/Page.tsx>): Shows the actual UI contract for a `Page` entry, including title, description, hero image, rich text sanitization, and block rendering.
-- [components/Preview.tsx](</C:/Users/user/Documents/GitHub/kickstart-next/components/Preview.tsx>): Explains how live preview works in the browser by initializing the preview SDK and refetching when entries change.
-- [lib/types.ts](</C:/Users/user/Documents/GitHub/kickstart-next/lib/types.ts>): Source of truth for the expected Contentstack fields and block structure.
-
-## Beginner Starting Point
-Start with the homepage request flow from [app/page.tsx](</C:/Users/user/Documents/GitHub/kickstart-next/app/page.tsx>). It is beginner-friendly because it is a short end-to-end path that touches routing, Contentstack data fetching, preview mode, and UI rendering without requiring knowledge of additional routes or backend services.
-
-## Example Explanation
-1. The app starts at [app/page.tsx](</C:/Users/user/Documents/GitHub/kickstart-next/app/page.tsx>), which is the home route for the App Router.
-2. That file checks `isPreview`, exported from [lib/contentstack.ts](</C:/Users/user/Documents/GitHub/kickstart-next/lib/contentstack.ts>). `isPreview` comes from `NEXT_PUBLIC_CONTENTSTACK_PREVIEW`.
-3. If preview mode is off, `Home()` calls `getPage("/")` in [lib/contentstack.ts](</C:/Users/user/Documents/GitHub/kickstart-next/lib/contentstack.ts>).
-4. `getPage("/")` uses the Contentstack delivery SDK to query the `page` content type, filter by `url`, and return the first matching entry typed as `Page`.
-5. The returned entry is passed into [components/Page.tsx](</C:/Users/user/Documents/GitHub/kickstart-next/components/Page.tsx>), which renders the title, description, image, rich text, and modular blocks.
-6. `components/Page.tsx` sanitizes rich text with `isomorphic-dompurify` before using `dangerouslySetInnerHTML`, which is an important safety detail for onboarding.
-7. If preview mode is on, [app/page.tsx](</C:/Users/user/Documents/GitHub/kickstart-next/app/page.tsx>) renders [components/Preview.tsx](</C:/Users/user/Documents/GitHub/kickstart-next/components/Preview.tsx>) instead of fetching once on the server.
-8. [components/Preview.tsx](</C:/Users/user/Documents/GitHub/kickstart-next/components/Preview.tsx>) initializes Contentstack Live Preview via `initLivePreview()`, then subscribes to `onEntryChange` so the page refetches when an editor changes content in Contentstack.
-9. In both modes, the same page data shape is defined by [lib/types.ts](</C:/Users/user/Documents/GitHub/kickstart-next/lib/types.ts>), so that file is the next best reference when you want to understand what Contentstack fields the renderer expects.
-
-## Learning Path
-1. Read [README.md](</C:/Users/user/Documents/GitHub/kickstart-next/README.md>) to set up a Contentstack stack and tokens.
-2. Trace the normal flow in [app/page.tsx](</C:/Users/user/Documents/GitHub/kickstart-next/app/page.tsx>) and [lib/contentstack.ts](</C:/Users/user/Documents/GitHub/kickstart-next/lib/contentstack.ts>).
-3. Read [components/Page.tsx](</C:/Users/user/Documents/GitHub/kickstart-next/components/Page.tsx>) with [lib/types.ts](</C:/Users/user/Documents/GitHub/kickstart-next/lib/types.ts>) open beside it so the content model and renderer stay aligned.
-4. Turn preview mode on with `.env` values from [.env.example](</C:/Users/user/Documents/GitHub/kickstart-next/.env.example>) and inspect [components/Preview.tsx](</C:/Users/user/Documents/GitHub/kickstart-next/components/Preview.tsx>).
-5. Review [next.config.mjs](</C:/Users/user/Documents/GitHub/kickstart-next/next.config.mjs>) and image-related env vars before changing Contentstack asset hosts.
-
-## Mermaid Diagram
+## Folder Structure
 ```mermaid
 flowchart TD
-  A[app/page.tsx Home route] --> B{isPreview?}
-  B -- No --> C[lib/contentstack.ts getPage('/')]
-  C --> D[Contentstack delivery SDK query]
-  D --> E[components/Page.tsx]
-  B -- Yes --> F[components/Preview.tsx]
-  F --> G[initLivePreview + onEntryChange]
-  G --> C
+    repo["kickstart-next/"]
+    app["app/"]
+    components["components/"]
+    lib["lib/"]
+    github[".github/"]
+    findings["findings/"]
+    logs["logs/"]
+
+    repo --> app
+    repo --> components
+    repo --> lib
+    repo --> github
+    repo --> findings
+    repo --> logs
+
+    app --> appLayout["layout.tsx"]
+    app --> appPage["page.tsx"]
+    app --> appGlobals["globals.css"]
+
+    components --> pageComponent["Page.tsx"]
+    components --> previewComponent["Preview.tsx"]
+
+    lib --> contentstack["contentstack.ts"]
+    lib --> types["types.ts"]
+
+    github --> workflows["workflows/"]
+    github --> codeowners["CODEOWNERS"]
 ```
 
-## Gotchas
-- The metadata in [app/layout.tsx](</C:/Users/user/Documents/GitHub/kickstart-next/app/layout.tsx>) still uses the default `create next app` title and description, so it does not reflect the actual starter.
-- Preview behavior depends on `NEXT_PUBLIC_CONTENTSTACK_PREVIEW=true`; without it, the app uses the one-time server fetch path.
-- The README documents the primary env vars, but some optional host overrides are only discoverable in [lib/contentstack.ts](</C:/Users/user/Documents/GitHub/kickstart-next/lib/contentstack.ts>) and [next.config.mjs](</C:/Users/user/Documents/GitHub/kickstart-next/next.config.mjs>).
-- There is no test suite or `npm test` script in [package.json](</C:/Users/user/Documents/GitHub/kickstart-next/package.json>), so onboarding relies on local running, linting, and code inspection.
+- `app/`
+  Next.js App Router files. This includes the root layout, homepage route, global styles, and favicon.
+- `components/`
+  React components for rendering content and handling preview mode.
+- `lib/`
+  Shared logic and TypeScript types. This is where the Contentstack integration lives.
+- `.github/`
+  Repository metadata and CI/workflow files.
+- `findings/`
+  Markdown notes and repository-analysis outputs.
+- `logs/`
+  Local log output.
+- `.next/`
+  Generated Next.js build artifacts.
+- `node_modules/`
+  Installed npm packages.
 
-## Evidence
-- Files reviewed: `AGENTS.md`, `README.md`, `package.json`, `.env.example`, `app/page.tsx`, `app/layout.tsx`, `components/Page.tsx`, `components/Preview.tsx`, `lib/contentstack.ts`, `lib/types.ts`, `next.config.mjs`, `findings/repository-overview.md`
-- Commands used: `Get-ChildItem -Force`, `rg --files`, `Get-Content <file>`
-- Inferences: The recommended beginner path is an inference based on the shortest visible end-to-end flow in the codebase.
+## Key Modules
+### `lib/contentstack.ts`
+This is the most important integration file in the repo.
+
+It:
+- Reads Contentstack-related environment variables
+- Configures the Contentstack delivery SDK
+- Enables preview mode
+- Initializes Contentstack Live Preview
+- Exposes `getPage(url)` to load a page entry by URL
+
+If you want to understand how the app talks to Contentstack, start here.
+
+### `app/page.tsx`
+This is the homepage route.
+
+It:
+- Checks whether preview mode is enabled
+- Renders `Preview` when live preview is active
+- Otherwise fetches the homepage content and renders `Page`
+
+This file is the top-level decision point for the app.
+
+### `components/Preview.tsx`
+This is the client-side live preview wrapper.
+
+It:
+- Initializes Contentstack Live Preview in the browser
+- Fetches content for the current path
+- Subscribes to entry changes
+- Re-renders the page when content changes
+
+This is the best file to read if you want to understand editor-facing preview behavior.
+
+### `components/Page.tsx`
+This is the shared renderer for page content.
+
+It displays:
+- Page title
+- Description
+- Hero image
+- Rich text
+- Modular content blocks
+
+It also includes support for editable tags used by Contentstack Live Preview and sanitizes HTML before rendering it.
+
+### `lib/types.ts`
+This file defines the TypeScript model for the content returned from Contentstack.
+
+The most important type is `Page`, which includes fields such as:
+- `title`
+- `description`
+- `image`
+- `rich_text`
+- `blocks`
+
+Use this file as the schema reference while reading the rest of the app.
+
+## Example Explanation
+The easiest way to understand the repository is to trace the homepage request:
+
+1. A request reaches `app/page.tsx`.
+2. The app checks `isPreview` from `lib/contentstack.ts`.
+3. If preview mode is enabled, it renders `components/Preview.tsx`.
+4. If preview mode is disabled, it calls `getPage("/")` from `lib/contentstack.ts`.
+5. `getPage("/")` queries the Contentstack `page` content type for the entry whose `url` equals `/`.
+6. The resulting entry is passed into `components/Page.tsx`.
+7. `components/Page.tsx` renders the visible UI from the content fields.
+
+That flow captures the whole application:
+- `lib/` handles configuration and data access
+- `app/` handles routing
+- `components/` handles rendering
+
+## Learning Path
+For a new contributor, this is the best order to read the repository:
+
+1. `README.md`
+   Learn what the project is for, which credentials are needed, and how to run it locally.
+2. `lib/contentstack.ts`
+   Understand the Contentstack configuration, environment variables, and query logic.
+3. `app/page.tsx`
+   See the high-level route flow and the preview vs non-preview split.
+4. `components/Page.tsx`
+   Understand how content is translated into UI.
+5. `lib/types.ts`
+   Use the type definitions to understand the expected data model.
+6. `components/Preview.tsx`
+   Learn how live preview refreshes content on the client side.
+
+## Where To Start
+If you are brand new to this repository, start with the files that explain the app from the outside in.
+
+The simplest starting sequence is:
+1. Read `README.md` to understand the purpose of the repo and the required Contentstack setup.
+2. Read `lib/contentstack.ts` to understand how the app connects to Contentstack and fetches content.
+3. Read `app/page.tsx` to see the top-level request flow.
+4. Read `components/Page.tsx` to see how the fetched content is rendered.
+
+This order helps because it moves from setup, to data access, to route logic, to UI output.
+
+## First Files To Read
+- `README.md`
+  Start here for project context, environment variables, and local setup steps.
+- `lib/contentstack.ts`
+  Read this next to understand the Contentstack SDK configuration, preview mode, and the `getPage("/")` query.
+- `app/page.tsx`
+  This is the shortest way to understand the runtime flow of the homepage.
+- `components/Page.tsx`
+  This shows exactly which content fields appear on the page and how they are rendered.
+- `lib/types.ts`
+  Use this as the content schema reference while reading the renderer.
+- `components/Preview.tsx`
+  Read this after the basics to understand how live preview updates the page in the browser.
+
+## Suggested Exercises
+- Run the app locally and identify where the homepage content is fetched.
+  Goal: connect the `README.md` setup steps to the code in `lib/contentstack.ts` and `app/page.tsx`.
+- Trace the homepage rendering flow from route to UI.
+  Goal: follow the path from `app/page.tsx` to `getPage("/")` to `components/Page.tsx`.
+- Add a temporary console log or breakpoint to inspect the fetched page data.
+  Goal: compare the runtime data with the `Page` type in `lib/types.ts`.
+- Change the styling of the title or description in `components/Page.tsx`.
+  Goal: get comfortable making a safe UI-only change in a small file.
+- Add support for rendering one additional field from the Contentstack `Page` model.
+  Goal: practice updating types, fetching assumptions, and rendering logic together.
+- Toggle preview mode using `NEXT_PUBLIC_CONTENTSTACK_PREVIEW` and observe the flow difference.
+  Goal: understand when the app uses `Preview.tsx` instead of the normal server-rendered path.
+
+## Notes For New Contributors
+- The app depends on Contentstack credentials defined in `.env`.
+- The homepage assumes there is a Contentstack `page` entry with the URL `/`.
+- Preview behavior is controlled by `NEXT_PUBLIC_CONTENTSTACK_PREVIEW`.
+- Remote image hosts are configured in `next.config.mjs`.
+
+Once those pieces make sense, the entire repository becomes much easier to navigate.
